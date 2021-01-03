@@ -40,7 +40,7 @@
     </span>
 
     <script>
-        var allParts = $("svg > g > g > *");
+        var allParts = $("svg > g > g *[kvg\\:element]");
 
         allParts.on({
             mouseenter: function () {
@@ -54,7 +54,7 @@
         });
 
         allParts.click(function() {
-            window.location = "{{ url_for('submit_kanji') }}" + "?kanji=" + ((typeof $(this).attr("kvg:original") !== typeof undefined) ? $(this).attr("kvg:original") : $(this).attr("kvg:element"));
+            window.location = "{{ url_for('submit_kanji') }}" + "?kanji=" + ((typeof $(this).attr("kvg:original") === typeof undefined) ? ((typeof $(this).attr("kvg:element") === typeof undefined) ? $(this).attr("kvg:phon") : $(this).attr("kvg:element")) : $(this).attr("kvg:original") );
         });
 
     </script>
