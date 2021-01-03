@@ -127,7 +127,7 @@
                 });
 
                 allParts.click(function() {
-                    window.location = window.location.origin + "?kanji=" + ((typeof $(this).attr("kvg:original") === typeof undefined) ? ((typeof $(this).attr("kvg:element") === typeof undefined) ? $(this).attr("kvg:phon") : $(this).attr("kvg:element")) : $(this).attr("kvg:original") );
+                    window.location = window.location.origin + "?kanji=" + $(this).attr("kvg:element");
                 });
             });
 
