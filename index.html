@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanji</title>
+
+    <style>
+        object {
+            position: absolute;
+        }
+
+        .on {
+            stroke: green;
+            cursor: pointer;
+        }
+
+        span {
+            display: inline-block;
+            width: 50vh;
+            height: 50vh;
+            background-size: cover;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>search for kanji</h1>
+    <form>
+        <input type="text" name="kanji">
+        <input type="submit">
+    </form>
+    <span id="kanji_container">Loading</span>
+
+    <h2 id="kanji_meaning">Meanings currently not available due to CORS issues</h2>
+
+    <script>
+        $.urlParam = function(name){
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            try {
+                return results[1] || 0;
+            } catch (error) {
+                return undefined;
+            }
+	        
+        }
+
+        $.loadSVG = function(hex) {
+            return $.ajax({
+                url: "assets/0" + hex + ".svg",
+                dataType: "text",
+                success: function(data) {
+                    $("#kanji_container").html(data);
+                    $("svg > g:nth-child(2)").remove();
+                    $("span").contents().filter((_, el) => el.nodeType === 3).remove();
+                }
+            });
+        }
+
+        const kanji_raw = $.urlParam('kanji');
+        if(kanji_raw != undefined)
+        {
+            const kanji = decodeURIComponent(kanji_raw);
+
+            $("form > input[name=kanji]").val(kanji);
+
+            var hex = kanji.charCodeAt(0).toString(16);
+            $.loadSVG(hex).then( response => {
+                var allParts = $("svg > g > g > g[kvg\\:element]");
+
+                allParts.on({
+                    mouseenter: function () {
+                        allParts.removeClass("on");
+                        $(this).addClass("on");
+
+                    },
+                    mouseleave: function () {
+                        $(this).removeClass("on");
+                    },
+                });
+
+                allParts.click(function() {
+                    window.location = window.location.origin + "?kanji=" + ((typeof $(this).attr("kvg:original") === typeof undefined) ? ((typeof $(this).attr("kvg:element") === typeof undefined) ? $(this).attr("kvg:phon") : $(this).attr("kvg:element")) : $(this).attr("kvg:original") );
+                });
+            });
+
+            $.ajax({
+                url: "https://kanjiapi.dev/v1/kanji/" + kanji_raw,
+                dataType: "jsonp",
+                success: function(res) {
+                    console.log(res);
+                }
+            });            
+        }
+
+    </script>
+</body>
+</html>
