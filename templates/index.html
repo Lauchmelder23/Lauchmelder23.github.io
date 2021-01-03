@@ -31,6 +31,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
+    <h1>search for kanji</h1>
     <form action="{{ url_for('submit_kanji') }}" method="get">
         <input type="text" name="kanji">
         <input type="submit">
@@ -38,6 +39,10 @@
     <span>
         {{svg|safe}}
     </span>
+
+    <h2>
+        {{name}}
+    </h2>
 
     <script>
         var allParts = $("svg > g > g *[kvg\\:element]");
