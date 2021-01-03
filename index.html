@@ -5,14 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kanji</title>
 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <style>
-        object {
-            position: absolute;
+        .part {
+            transition: stroke 300ms;
         }
 
         .on {
             stroke: green;
             cursor: pointer;
+        }
+
+        .off {
+            stroke: orange;
         }
 
         span {
@@ -29,6 +34,7 @@
     </style>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 <body>
     <h1>search for kanji</h1>
@@ -63,6 +69,22 @@
             });
         }
 
+        $.getHighestElements = function(startPoint, selector, child = false) {
+            var elems = [];
+            startPoint.children('g').each(function () {
+                if(typeof $(this).attr(selector) !== typeof undefined) {
+                    elems.push($(this));
+                } else {
+                    $.merge(elems, $.getHighestElements($(this), selector, true));
+                }
+            });
+            
+            if(child)
+                return elems;
+            else
+                return $(elems).map(function() { return this.toArray(); });
+        }
+
         const kanji_raw = $.urlParam('kanji');
         if(kanji_raw != undefined)
         {
@@ -72,16 +94,20 @@
 
             var hex = kanji.charCodeAt(0).toString(16);
             $.loadSVG(hex).then( response => {
-                var allParts = $("svg > g > g g[kvg\\:element]");
+                
+                var allParts = $.getHighestElements($("svg > g > g"), "kvg:element");
+
+                allParts.addClass("off");
+                allParts.addClass("part");
 
                 allParts.on({
                     mouseenter: function () {
-                        allParts.removeClass("on");
-                        $(this).addClass("on");
-
+                        $(this).switchClass("off", "on");
+                        $(this).find('g.part').switchClass("off", "on");
                     },
                     mouseleave: function () {
-                        $(this).removeClass("on");
+                        $(this).switchClass("on", "off");
+                        $(this).find('g.part').switchClass("on", "off");
                     },
                 });
 
