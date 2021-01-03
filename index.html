@@ -12,12 +12,12 @@
         }
 
         .on {
-            stroke: green;
+            stroke: rgb(61, 202, 61);
             cursor: pointer;
         }
 
         .off {
-            stroke: orange;
+            stroke: rgb(255, 88, 88);
         }
 
         span {
@@ -25,22 +25,37 @@
             width: 50vh;
             height: 50vh;
             background-size: cover;
+            border-style: solid;
+            margin-top: 10px;
+        }
+
+        input {
+            font-size: 1em;
         }
 
         svg {
             width: 100%;
             height: 100%;
         }
+
+        h1, h2 {
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
     </style>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 <body>
-    <h1>search for kanji</h1>
+    <h1>Enter a Kanji</h1>
     <form>
-        <input type="text" name="kanji">
-        <input type="submit">
+        <table>
+            <tr>
+            <td><input type="text" name="kanji"></td>
+            <td><input type="submit"></td>
+            </tr>
+        </table>
     </form>
     <span id="kanji_container">Loading</span>
 
@@ -90,7 +105,7 @@
         {
             const kanji = decodeURIComponent(kanji_raw);
 
-            $("form > input[name=kanji]").val(kanji);
+            $("form input[name=kanji]").val(kanji);
 
             var hex = kanji.charCodeAt(0).toString(16);
             $.loadSVG(hex).then( response => {
