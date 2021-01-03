@@ -72,7 +72,7 @@
 
             var hex = kanji.charCodeAt(0).toString(16);
             $.loadSVG(hex).then( response => {
-                var allParts = $("svg > g > g > g[kvg\\:element]");
+                var allParts = $("svg > g > g g[kvg\\:element]");
 
                 allParts.on({
                     mouseenter: function () {
