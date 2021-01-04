@@ -62,6 +62,7 @@
     <h2 id="kanji_meaning">Meanings currently not available due to CORS issues</h2>
 
     <script>
+        // Helper function to get GET parameter from URL
         $.urlParam = function(name){
             var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
             try {
@@ -72,60 +73,64 @@
 	        
         }
 
+        // Helper function to load the KanjiVG from its unicode
         $.loadSVG = function(hex) {
             return $.ajax({
                 url: "assets/0" + hex + ".svg",
                 dataType: "text",
                 success: function(data) {
-                    $("#kanji_container").html(data);
-                    $("svg > g:nth-child(2)").remove();
-                    $("span").contents().filter((_, el) => el.nodeType === 3).remove();
+                    $("#kanji_container").html(data);   // Put svg in DOM
+                    $("svg > g:nth-child(2)").remove(); // Remove stroke numbering
+                    $("span").contents().filter((_, el) => el.nodeType === 3).remove(); // Remove weird text
                 }
             });
         }
 
+        // Helper function to extract only top-level elements of Kanji
         $.getHighestElements = function(startPoint, selector, child = false) {
-            var elems = [];
-            startPoint.children('g').each(function () {
-                if(typeof $(this).attr(selector) !== typeof undefined) {
-                    elems.push($(this));
+            var elems = []; 
+            startPoint.children('g').each(function () { // For each element in SVG
+                if(typeof $(this).attr(selector) !== typeof undefined) {    // If it has the desired attribute
+                    elems.push($(this));    // Add it to list
                 } else {
-                    $.merge(elems, $.getHighestElements($(this), selector, true));
+                    $.merge(elems, $.getHighestElements($(this), selector, true));  // Recurse
                 }
             });
             
-            if(child)
-                return elems;
+            if(child)   // If this function was called by recursion
+                return elems;   // Return the raw array
             else
-                return $(elems).map(function() { return this.toArray(); });
+                return $(elems).map(function() { return this.toArray(); }); // Prepare array for jQuery usage
         }
 
+        // Get Kanji from GET request
         const kanji_raw = $.urlParam('kanji');
         if(kanji_raw != undefined)
         {
+            // Get character representation from URL representation
             const kanji = decodeURIComponent(kanji_raw);
 
+            // Set value of input field to Kanji
             $("form input[name=kanji]").val(kanji);
 
+            // Get Hex code of Kanji
             var hex = kanji.charCodeAt(0).toString(16);
-            $.loadSVG(hex).then( response => {
-                
-                var allParts = $.getHighestElements($("svg > g > g"), "kvg:element");
+            $.loadSVG(hex).then( response => {  // Load the SVG of the Kanji
+                var allParts = $.getHighestElements($("svg > g > g"), "kvg:element");   // Get top-level elements
 
-                allParts.addClass("off");
-                allParts.addClass("part");
+                allParts.addClass("off");   // Give all elements class "off" (for unselected styling)
+                allParts.addClass("part");  // Give them class "part" as well (for default styling)
 
-                allParts.on({
-                    mouseenter: function () {
+                allParts.on({   // For each element
+                    mouseenter: function () {   // MouseEnter event: off -> on
                         $(this).switchClass("off", "on");
-                        $(this).find('g.part').switchClass("off", "on");
                     },
-                    mouseleave: function () {
+                    mouseleave: function () {   // MouseLeave event: on -> off
                         $(this).switchClass("on", "off");
-                        $(this).find('g.part').switchClass("on", "off");
                     },
                 });
 
+                // If element is clicked, redirect website to this element
                 allParts.click(function() {
                     window.location = window.location.origin + "?kanji=" + $(this).attr("kvg:element");
                 });
