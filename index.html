@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kanji</title>
 
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <style>
         .part {
@@ -36,13 +39,10 @@
             display: inline-block;
             width: 50vh;
             height: 50vh;
+            margin-left: 25vh;
+            margin-top: 10vh;
             background-size: cover;
             border-style: solid;
-            margin-top: 10px;
-        }
-
-        input {
-            font-size: 1em;
         }
 
         svg {
@@ -52,6 +52,7 @@
 
         body {
             font-family: Helvetica, Arial, sans-serif;
+            padding: 1em 10em;
         }
 
         footer {
@@ -59,29 +60,37 @@
             left: 0;
             bottom: 0;
             width: 100%;
-            background-color: rgb(212, 212, 212);
+            background-color: rgb(48, 48, 48);
             color: white;
             text-align: center;
+        }
+
+        #in_kanji {
+            font-size: 3em;
+            width: 3em;
+            text-align: center;
+        }
+
+        #in_btn {
+            display: inline-block;
+            text-align: center;
+            font-size: 3em;
+            width: 1.5em;
+            height: 1.55em;
+            border: none;
+            background-color: rgb(153, 153, 153);
+            color: rgb(240, 240, 240);
+            margin-left: 5px;
+        }
+
+        #in_btn:hover {
+            filter: invert(100%);
         }
 
     </style>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-</head>
-<body>
-    <h1>Enter a Kanji</h1>
-    <form>
-        <table>
-            <tr>
-            <td><input type="text" name="kanji"></td>
-            <td><input type="submit"></td>
-            </tr>
-        </table>
-    </form>
-    <span id="kanji_container"></span>
-
-    <h2 id="kanji_meaning"></h2>
 
     <script>
         // Helper function to get GET parameter from URL
@@ -132,15 +141,15 @@
             // Get character representation from URL representation
             const kanji = decodeURIComponent(kanji_raw);
 
-            // Set value of input field to Kanji
-            $("form input[name=kanji]").val(kanji);
-
             // Get Hex code of Kanji
             var hex = kanji.charCodeAt(0).toString(16);
             $.loadSVG(hex).then( response => {  // Load the SVG of the Kanji
                 var allParts = $.getHighestElements($("svg > g > g"), "kvg:element");   // Get top-level elements
 
                 allParts.addClass("part");  // Give them class "part" as well (for default styling)
+
+                // Set value of input field to Kanji
+                $("form input[name=kanji]").val(kanji);
 
                 const number_words = ["one", "two", "three", "four"]
                 var i = 0;
@@ -175,11 +184,36 @@
         }
 
     </script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="col-lg-8" style="padding-right:20px; border-right: 1px solid #ccc;">
+            <div class="row" style="padding-bottom:20px; border-bottom: 1px solid #ccc;">
+                <h1>Enter a Kanji</h1>
+                <form>
+                    <table>
+                        <tr>
+                        <td><input id="in_kanji" type="text" name="kanji" placeholder="漢字" maxlength="1"></td>
+                        <td><input id="in_btn" type="submit" value=">"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="row">
+                <span id="kanji_container"></span>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 text-center">
+            <h2 id="kanji_meaning"></h2>
+        </div>
 
-    <footer>
-        Vector Graphics supplied by 
-        <a href="http://kanjivg.tagaini.net">KanjiVG</a>
-        .
-    </footer>
+
+        <footer>
+            Vector Graphics supplied by 
+            <a href="http://kanjivg.tagaini.net">KanjiVG</a>
+            .
+        </footer>
+    </div>
 </body>
 </html>
