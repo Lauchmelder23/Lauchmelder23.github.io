@@ -50,8 +50,18 @@
             height: 100%;
         }
 
-        h1, h2 {
+        body {
             font-family: Helvetica, Arial, sans-serif;
+        }
+
+        footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: rgb(212, 212, 212);
+            color: white;
+            text-align: center;
         }
 
     </style>
@@ -69,9 +79,9 @@
             </tr>
         </table>
     </form>
-    <span id="kanji_container">Loading</span>
+    <span id="kanji_container"></span>
 
-    <h2 id="kanji_meaning">Meanings currently not available due to CORS issues</h2>
+    <h2 id="kanji_meaning"></h2>
 
     <script>
         // Helper function to get GET parameter from URL
@@ -155,17 +165,21 @@
                 allParts.click(function() {
                     window.location = window.location.origin + "?kanji=" + $(this).attr("kvg:element");
                 });
-            });
 
-            $.ajax({
-                url: "https://kanjiapi.dev/v1/kanji/" + kanji_raw,
-                dataType: "jsonp",
-                success: function(res) {
-                    console.log(res);
+                try {
+                    $("#kanji_meaning").html($("svg").attr("meaning"));
+                } catch (error) {
+                    $("#kanji_meaning").html("Apparently this has no meaning. Tell me about it.");
                 }
-            });            
+            });
         }
 
     </script>
+
+    <footer>
+        Vector Graphics supplied by 
+        <a href="http://kanjivg.tagaini.net">KanjiVG</a>
+        .
+    </footer>
 </body>
 </html>
