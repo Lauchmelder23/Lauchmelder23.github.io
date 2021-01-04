@@ -8,16 +8,28 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <style>
         .part {
-            transition: stroke 300ms;
+            transition: stroke-width 100ms;
+        }
+
+        .one {
+            stroke: rgb(255, 88, 88);
+        }
+
+        .two {
+            stroke: rgb(53, 206, 53)
+        }
+
+        .three {
+            stroke: rgb(47, 172, 255)
+        }
+
+        .four {
+            stroke:rgb(252, 193, 0)
         }
 
         .on {
-            stroke: rgb(61, 202, 61);
+            stroke-width: 4;
             cursor: pointer;
-        }
-
-        .off {
-            stroke: rgb(255, 88, 88);
         }
 
         span {
@@ -118,15 +130,24 @@
             $.loadSVG(hex).then( response => {  // Load the SVG of the Kanji
                 var allParts = $.getHighestElements($("svg > g > g"), "kvg:element");   // Get top-level elements
 
-                allParts.addClass("off");   // Give all elements class "off" (for unselected styling)
                 allParts.addClass("part");  // Give them class "part" as well (for default styling)
 
+                const number_words = ["one", "two", "three", "four"]
+                var i = 0;
+                allParts.each(function () {
+                    try {
+                        $(this).addClass(number_words[i++]);
+                    } catch (error) {
+                        // Do nothing, this shouldn't ever be hit but just in case
+                    }
+                });
+
                 allParts.on({   // For each element
-                    mouseenter: function () {   // MouseEnter event: off -> on
-                        $(this).switchClass("off", "on");
+                    mouseenter: function () {   // MouseEnter event: give on class
+                        $(this).addClass("on");
                     },
-                    mouseleave: function () {   // MouseLeave event: on -> off
-                        $(this).switchClass("on", "off");
+                    mouseleave: function () {   // MouseLeave event: remove on class
+                        $(this).removeClass("on");
                     },
                 });
 
