@@ -104,6 +104,14 @@
             color: rgb(255, 230, 86);
         }
 
+        .learn_more {
+            color: rgb(0, 85, 212)
+        }
+
+        .learn_more:hover {
+            color: rgb(224, 127, 0)
+        }
+
     </style>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -153,7 +161,7 @@
 
         // Get Kanji from GET request
         const kanji_raw = $.urlParam('kanji');
-        if(kanji_raw != undefined)
+        if(kanji_raw !== undefined)
         {
             // Get character representation from URL representation
             const kanji = decodeURIComponent(kanji_raw);
@@ -199,6 +207,10 @@
                 $("#kanji_meaning").html((typeof meaning !== typeof undefined) ? meaning : "Apparently this has no meaning.<br /> Tell me about it so I can fix it.");
                 $("#kun_yomi").html((typeof kun !== typeof undefined) ? "Kun: " + kun : "");
                 $("#on_yomi").html((typeof on !== typeof undefined) ? "On: " + on : "");
+                if(typeof meaning !== typeof undefined) {
+                    $(".learn_more").attr("href", "https://www.jisho.org/search/" + kanji + "%20%23kanji");
+                    $(".learn_more").attr("style", "");
+                }
             });
         }
 
@@ -231,6 +243,9 @@
                 <h3 id="kun_yomi"></h3>
                 <h3 id="on_yomi"></h2>
             </div>
+            <div class="row">
+                <a class="learn_more" href="" style="visibility: hidden;" target="_blank">Learn more &raquo</a>
+            </div>
         </div>
 
         
@@ -239,13 +254,13 @@
         <footer>
             <div class="col-lg-6 text-center">
                 Vector Graphics supplied by 
-                <a href="http://kanjivg.tagaini.net">KanjiVG</a>
+                <a href="http://kanjivg.tagaini.net" target="_blank">KanjiVG</a>
                 .
             </div>
 
             <div class="col-lg-6 text-center">
                 My 
-                <a href="https://github.com/Lauchmelder23">GitHub</a>
+                <a href="https://github.com/Lauchmelder23" target="_blank">GitHub</a>
             </div>
         </footer>
     </div>
