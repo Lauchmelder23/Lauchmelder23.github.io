@@ -175,11 +175,13 @@
                     window.location = window.location.origin + "?kanji=" + $(this).attr("kvg:element");
                 });
 
-                try {
-                    $("#kanji_meaning").html($("svg").attr("meaning"));
-                } catch (error) {
-                    $("#kanji_meaning").html("Apparently this has no meaning. Tell me about it.");
-                }
+                const meaning = $("svg").attr("meaning");
+                const kun = $("svg").attr("kun");
+                const on = $("svg").attr("on")
+
+                $("#kanji_meaning").html((typeof meaning !== typeof undefined) ? meaning : "Apparently this has no meaning. Tell me about it.");
+                $("#kun_yomi").html((typeof kun !== typeof undefined) ? "Kun: " + kun : "");
+                $("#on_yomi").html((typeof on !== typeof undefined) ? "On: " + kun : "");
             });
         }
 
@@ -206,6 +208,8 @@
         
         <div class="col-lg-4 text-center">
             <h2 id="kanji_meaning"></h2>
+            <h3 id="kun_yomi"></h3>
+            <h3 id="on_yomi"></h2>
         </div>
 
 
