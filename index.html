@@ -36,6 +36,7 @@
         }
 
         span {
+            background-color: white;
             display: inline-block;
             width: 50vh;
             height: 50vh;
@@ -51,8 +52,15 @@
         }
 
         body {
+            background-color: rgb(230, 230, 230);
             font-family: Helvetica, Arial, sans-serif;
-            padding: 1em 10em;
+        }
+        
+        .container {
+            background-color: rgb(220, 220, 220);
+            height: 100vh;
+            width: 75vw;
+            margin-top: 0;
         }
 
         footer {
@@ -85,6 +93,15 @@
 
         #in_btn:hover {
             filter: invert(100%);
+        }
+
+        a {
+            color: rgb(86, 255, 128);
+            font-weight: 200;
+        }
+
+        a:hover {
+            color: rgb(255, 230, 86);
         }
 
     </style>
@@ -179,7 +196,7 @@
                 const kun = $("svg").attr("kun");
                 const on = $("svg").attr("on")
 
-                $("#kanji_meaning").html((typeof meaning !== typeof undefined) ? meaning : "Apparently this has no meaning. Tell me about it.");
+                $("#kanji_meaning").html((typeof meaning !== typeof undefined) ? meaning : "Apparently this has no meaning.<br /> Tell me about it so I can fix it.");
                 $("#kun_yomi").html((typeof kun !== typeof undefined) ? "Kun: " + kun : "");
                 $("#on_yomi").html((typeof on !== typeof undefined) ? "On: " + on : "");
             });
@@ -188,9 +205,9 @@
     </script>
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="col-lg-8" style="padding-right:20px; border-right: 1px solid #ccc;">
-            <div class="row" style="padding-bottom:20px; border-bottom: 1px solid #ccc;">
+    <div class="container">
+        <div class="col-lg-8" style="padding-right:20px; border-right: 1px solid #999;">
+            <div class="row" style="padding-bottom:20px; border-bottom: 1px solid #999;">
                 <h1>Enter a Kanji</h1>
                 <form>
                     <table>
@@ -207,16 +224,29 @@
         </div>
         
         <div class="col-lg-4 text-center">
-            <h2 id="kanji_meaning"></h2>
-            <h3 id="kun_yomi"></h3>
-            <h3 id="on_yomi"></h2>
+            <div class="row" style="border-bottom: 1px solid #999;">
+                <h2 id="kanji_meaning"></h2>
+            </div>
+            <div class="row">
+                <h3 id="kun_yomi"></h3>
+                <h3 id="on_yomi"></h2>
+            </div>
         </div>
+
+        
 
 
         <footer>
-            Vector Graphics supplied by 
-            <a href="http://kanjivg.tagaini.net">KanjiVG</a>
-            .
+            <div class="col-lg-6 text-center">
+                Vector Graphics supplied by 
+                <a href="http://kanjivg.tagaini.net">KanjiVG</a>
+                .
+            </div>
+
+            <div class="col-lg-6 text-center">
+                My 
+                <a href="https://github.com/Lauchmelder23">GitHub</a>
+            </div>
         </footer>
     </div>
 </body>
