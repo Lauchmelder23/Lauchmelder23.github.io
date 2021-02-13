@@ -10,6 +10,10 @@
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <style>
+        path {
+            stroke: white;
+        }
+
         .part {
             transition: stroke-width 100ms;
         }
@@ -32,6 +36,10 @@
 
         .five {
             stroke: rgb(239, 60, 255);
+        }
+
+        .six {
+            stroke: rgb(0, 255, 200);
         }
 
         .on {
@@ -182,7 +190,7 @@
                 // Set value of input field to Kanji
                 $("form input[name=kanji]").val(kanji);
 
-                const number_words = ["one", "two", "three", "four", "five"]
+                const number_words = ["one", "two", "three", "four", "five", "six"]
                 var i = 0;
                 allParts.each(function () {
                     try {
