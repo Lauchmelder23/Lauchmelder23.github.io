@@ -151,7 +151,8 @@ function centerOfMass(samples) {
 
 function simulate()
 {
-    acc = -m*g*L*sin(theta) / inertia - 2 * vel;
+    acc = -m*g*L*sin(theta) / inertia;
+    if(abs(theta) > 0.0001) acc -= 2 * vel;
     console.log(degrees(theta));
     vel += acc * deltaTime / 10000;
     var dtheta = theta;
