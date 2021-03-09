@@ -189,7 +189,7 @@ function draw()
 
     // Draw lines between vertices
     stroke(255);
-    fill(230, 50, 50);
+    fill(200, 50, 50, 50);
     if(!shapeComplete)
     {
         points.forEach(function(item, index) {
@@ -276,6 +276,6 @@ function handleClick(event)
         helper.sub(centerMass);
         theta = helper.angleBetween(createVector(0, -1));
 
-        document.getElementById("inst").innerHTML = "Refresh the website to try another shape."
+        document.getElementById("inst").innerHTML = "Mass: " + m + " M --- Moment of inertia: " + inertia.toFixed(3) + " ML²";
     }
 }
