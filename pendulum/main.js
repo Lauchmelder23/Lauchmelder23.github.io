@@ -146,11 +146,6 @@ function centerOfMass(samples) {
     sum.mult(h);
     sum.mult(1 / m);
 
-    L = sum.dist(attachPoint);
-    var helper = createVector(attachPoint.x, attachPoint.y);
-    helper.sub(sum);
-    theta = helper.angleBetween(createVector(0, -1));
-
     return sum;
 }
 
@@ -194,10 +189,25 @@ function draw()
 
     // Draw lines between vertices
     stroke(255);
-    points.forEach(function(item, index) {
-        if(index !== points.length - 1)
-            line(item.x, item.y, points[index + 1].x, points[index + 1].y);
-    });
+    fill(230, 50, 50);
+    if(!shapeComplete)
+    {
+        points.forEach(function(item, index) {
+            if(index !== points.length - 1)
+                line(item.x, item.y, points[index + 1].x, points[index + 1].y);
+        });
+    }
+    else
+    {
+        beginShape();
+        points.forEach(function(item, index) {
+            vertex(item.x, item.y);
+        });
+        endShape()
+
+        fill(50, 50, 255);
+        rect(centerMass.x - 5, centerMass.y - 5, 10, 10);
+    }
 
     if(!shapeComplete)
     {
@@ -232,9 +242,6 @@ function draw()
     {
         fill(50, 255, 50);
         rect(attachPoint.x - 5, attachPoint.y - 5, 10, 10);
-        
-        fill(50, 50, 255);
-        rect(centerMass.x - 5, centerMass.y - 5, 10, 10);
 
         simulate();
     }
@@ -254,13 +261,21 @@ function handleClick(event)
             shapeComplete = true;
             inertia = momentOfInertia(100);
             console.log("Moment of inertia: " + inertia + " ML²");
+            centerMass = centerOfMass(100);
+
+            document.getElementById("inst").innerHTML = "Use your mouse to select the pivot point."
         }
     }
     else if(!attachPointSelected)
     {
         attachPoint = createVector(mouseX, mouseY);
         attachPointSelected = true;
-        centerMass = centerOfMass(100);
-        // simulate();
+
+        L = centerMass.dist(attachPoint);
+        var helper = createVector(attachPoint.x, attachPoint.y);
+        helper.sub(centerMass);
+        theta = helper.angleBetween(createVector(0, -1));
+
+        document.getElementById("inst").innerHTML = "Refresh the website to try another shape."
     }
 }
