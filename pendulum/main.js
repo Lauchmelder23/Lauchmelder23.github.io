@@ -62,7 +62,7 @@ function insideShape(point)
         j=i; 
     }
 
-  return (oddNodes ? 2.7 : 0);    // 1 kgm^-2
+  return (oddNodes ? 19300 * 0.01  : 0);    // 19.3 kgm^-3 at 1cm thick
 }
 
 function massHelper(y, samples)
@@ -300,6 +300,6 @@ function handleClick(event)
         theta = helper.angleBetween(createVector(0, -1));
         // alert(degrees(theta));
 
-        document.getElementById("inst").innerHTML = "Mass: " + m.toFixed(3) + " kg --- Moment of inertia: " + inertia.toFixed(3) + " kgm^-2 --- Canvas is 2m wide --- Simulated material is aluminum";
+        document.getElementById("inst").innerHTML = "Mass: " + m.toFixed(3) + " kg --- Moment of inertia: " + inertia.toFixed(3) + " kgm^-2 --- Canvas is 2m wide --- Simulated material is tungsten at 1cm thickness";
     }
 }
