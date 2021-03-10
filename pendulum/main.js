@@ -173,7 +173,7 @@ function simulate()
 
 function setup() 
 {
-    canvas = createCanvas(displayWidth - 100, displayHeight / 4 * 3);
+    canvas = createCanvas(displayHeight / 4 * 3, displayHeight / 4 * 3);
     canvas.mouseClicked(handleClick);
 }
 
