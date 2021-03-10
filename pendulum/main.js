@@ -12,10 +12,30 @@ let centerMass;
 let inertia;
 
 let L;
-let g = 4.81;
+let g = 9.81;
 let acc = 0;
 let vel = 0;
 let theta = 0;
+
+let canvasSize = 2; // 2 meters, whatever
+
+function screenToWorld(point)
+{
+    returnVal = createVector(point.x, point.y);
+    returnVal.div(width);
+    returnVal.mult(canvasSize);
+
+    return returnVal;
+}
+
+function worldToScreen(point)
+{
+    returnVal = createVector(point.x, point.y);
+    returnVal.div(canvasSize);
+    returnVal.mult(width);
+
+    return returnVal;
+}
 
 function insideShape(point)
 {
@@ -23,6 +43,7 @@ function insideShape(point)
         return false;
 
     // Raycasting algorithm
+    point = worldToScreen(point);
     var j = points.length - 1;
     var oddNodes = false;
 
@@ -41,15 +62,15 @@ function insideShape(point)
         j=i; 
     }
 
-  return (oddNodes ? 1 : 0);
+  return (oddNodes ? 2.7 : 0);    // 1 kgm^-2
 }
 
 function massHelper(y, samples)
 {
     var origin = createVector(0, 0);
 
-    var h = width / samples;
-    var sum = 0.5 * (insideShape(createVector(0, y)) + insideShape(createVector(width, y)));
+    var h = canvasSize / samples;
+    var sum = 0.5 * (insideShape(createVector(0, y)) + insideShape(createVector(canvasSize, y)));
 
     for(var i = 1; i <= samples - 1; i++)
     {
@@ -62,8 +83,8 @@ function massHelper(y, samples)
 
 function mass(samples)
 {
-    var h = height / samples;
-    var sum = 0.5 * (massHelper(0, samples) + massHelper(height, samples));
+    var h = canvasSize / samples;
+    var sum = 0.5 * (massHelper(0, samples) + massHelper(canvasSize, samples));
 
     for(var i = 1; i <= samples - 1; i++)
     {
@@ -77,16 +98,16 @@ function momentOfInertiaHelper(y, samples)
 {
     var origin = createVector(0, 0);
 
-    var h = width / samples;
+    var h = canvasSize / samples;
     var sum = 0.5 * (
-        insideShape(createVector(0, y)) * pow(createVector(0, y).dist(origin) / width, 2) 
-        + insideShape(createVector(width, y)) * pow(createVector(0, y).dist(origin) / width, 2)
+        insideShape(createVector(0, y)) * pow(createVector(0, y).dist(origin) / canvasSize, 2) 
+        + insideShape(createVector(canvasSize, y)) * pow(createVector(0, y).dist(origin) / canvasSize, 2)
     );
 
     for(var i = 1; i <= samples - 1; i++)
     {
         var point = createVector(i * h, y);
-        sum += insideShape(point) * pow(point.dist(origin) / width, 2)
+        sum += insideShape(point) * pow(point.dist(origin) / canvasSize, 2)
     }
 
     return h * sum;
@@ -94,8 +115,8 @@ function momentOfInertiaHelper(y, samples)
 
 function momentOfInertia(samples)
 {
-    var h = height / samples;
-    var sum = 0.5 * (momentOfInertiaHelper(0, samples) + momentOfInertiaHelper(height, samples));
+    var h = canvasSize / samples;
+    var sum = 0.5 * (momentOfInertiaHelper(0, samples) + momentOfInertiaHelper(canvasSize, samples));
 
     for(var i = 1; i <= samples - 1; i++)
     {
@@ -109,10 +130,10 @@ function centerOfMassHelper(y, samples)
 {
     var origin = createVector(0, 0);
 
-    var h = width / samples;
+    var h = canvasSize / samples;
 
     var v0 = createVector(0, y);
-    var vn = createVector(width, y);
+    var vn = createVector(canvasSize, y);
     v0.mult(insideShape(v0));
     vn.mult(insideShape(vn));
 
@@ -134,9 +155,9 @@ function centerOfMassHelper(y, samples)
 function centerOfMass(samples) {
     m = mass(samples);
 
-    var h = height / samples;
+    var h = canvasSize / samples;
     var sum = centerOfMassHelper(0, samples);
-    sum.add(centerOfMassHelper(height, samples));
+    sum.add(centerOfMassHelper(canvasSize, samples));
     sum.mult(0.5);
     for(var i = 1; i <= samples - 1; i++)
     {
@@ -152,23 +173,24 @@ function centerOfMass(samples) {
 function simulate()
 {
     acc = -m*g*L*sin(theta) / inertia;
-    if(abs(theta) > 0.0001) acc -= 2 * vel;
+    if(abs(theta) > 0.0001) acc -= 0.2 * vel;
     console.log(degrees(theta));
-    vel += acc * deltaTime / 10000;
+    vel += acc * deltaTime / 1000;
     var dtheta = theta;
-    theta += vel * deltaTime / 10000;
+    theta += vel * deltaTime / 1000;
     dtheta -= theta;
-    dtheta *= -1;
+
+    worldAttach = screenToWorld(attachPoint);
 
     points.forEach(function(item, index) {
         item.sub(attachPoint);
-        item.rotate(-dtheta);
+        item.rotate(dtheta);
         item.add(attachPoint);
     });
 
-    centerMass.sub(attachPoint);
-    centerMass.rotate(-dtheta);
-    centerMass.add(attachPoint);
+    centerMass.sub(worldAttach);
+    centerMass.rotate(dtheta);
+    centerMass.add(worldAttach);
 }
 
 function setup() 
@@ -207,7 +229,8 @@ function draw()
         endShape()
 
         fill(50, 50, 255);
-        rect(centerMass.x - 5, centerMass.y - 5, 10, 10);
+        com = worldToScreen(centerMass);
+        rect(com.x - 5, com.y - 5, 10, 10);
     }
 
     if(!shapeComplete)
@@ -261,7 +284,6 @@ function handleClick(event)
         {
             shapeComplete = true;
             inertia = momentOfInertia(100);
-            console.log("Moment of inertia: " + inertia + " ML²");
             centerMass = centerOfMass(100);
 
             document.getElementById("inst").innerHTML = "Use your mouse to select the pivot point."
@@ -272,11 +294,12 @@ function handleClick(event)
         attachPoint = createVector(mouseX, mouseY);
         attachPointSelected = true;
 
-        L = centerMass.dist(attachPoint);
-        var helper = createVector(attachPoint.x, attachPoint.y);
+        L = centerMass.dist(screenToWorld(attachPoint));
+        var helper = screenToWorld(attachPoint)
         helper.sub(centerMass);
         theta = helper.angleBetween(createVector(0, -1));
+        // alert(degrees(theta));
 
-        document.getElementById("inst").innerHTML = "Mass: " + m + " M --- Moment of inertia: " + inertia.toFixed(3) + " ML²";
+        document.getElementById("inst").innerHTML = "Mass: " + m + " kg --- Moment of inertia: " + inertia.toFixed(3) + " kgm^-2 --- Canvas is 2m wide --- Simulated material is aluminum";
     }
 }
