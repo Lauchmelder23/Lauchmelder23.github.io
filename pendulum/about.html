@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendulum</title>
+
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+    </style>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <h1>How it works</h1>
+    <h2>The movement</h2>
+    <p>
+        This applet simulates a <i>phyical</i> pendulum. This means that the swinging body is considered to have a moment of inertia, instead of
+        being a mass concentrated in a single point in space. So in order to simulate such a pendulum for <i>any</i> polygon imaginable we need to
+        find ways to calculate the mass, moment of inertia, and center of mass of any shape.
+    </p>
+    <p>
+        The differential equation governing the movement of these pendulums is
+        $$
+            \alpha = \ddot{\theta} = -\frac{mgL}{I}\sin\theta
+        $$
+        with the following parameters:
+        <ul>
+            <li>\( \alpha \,/\, \ddot{\theta} \) - Angular acceleration</li>
+            <li>\( m \) - Mass</li>
+            <li>\( g \) - Gravitational acceleration</li>
+            <li>\( L \) - Distance between pivot and center of mass</li>
+            <li>\( I \) - Moment of inertia</li>
+            <li>\( \theta \) - Angle of the pendulum relative to the vertical axis</li>
+        </ul>
+    </p>
+
+    <h2>The parameters</h2>
+    <p>From the previous paragraph it is apparent that we need to find a few values, namely the <i>mass</i>, <i>center of mass</i>
+        and the <i>moment of inertia</i>. These three properties of the pendulum have fairly straight-forward formulas that allow
+        us to calculate them:
+
+        $$
+            m = \iint_{S} \rho(\vec{r}) \mathop{}\!\mathrm{d}{A}
+        $$
+        $$
+            \vec{R} = \frac{1}{m} \iint_{S} \rho(\vec{r}) \vec{r} \mathop{}\!\mathrm{d}{A}
+        $$
+        $$
+            I = \iint_{S} \rho(\vec{r}) ||\vec{r}||^2 \mathop{}\!\mathrm{d}{A}
+        $$
+
+        \(S\) denotes the set of points that lie within our pendulum. So now we have three formulas that we can use to calculate the missing
+        parameters! Except that these equations make use of integrals. We need to find a way to somehow calculate integrals in JavaScript.
+        Thankfully the mathematical field of numerics has already provided us with an algorithm that we can easily implement.
+    </p>
+
+    <h2>Quadrature</h2>
+    In numerics we don't integrate, we quadrate. Don't ask me why. In this project I settled for the trapezoid method:
+
+    $$
+        \int_{x_0}^{x_{N-1}} f(x) \mathop{}\!\mathrm{d}x \approx h\left[ \frac{1}{2} f_0 + f_1 + \cdots + f_{N-2} + \frac{1}{2} f_{N-1} \right]
+    $$
+
+    This isn't exactly the most accurate algorithm, but it gets the job done, and we'll later see that it really doesn't matter in this case. 
+    The only problem left is that the equations above are <i>double</i> integrals, how can we use the trapezoid method to calculate those?
+    Well let's consider the following integral:
+
+    $$
+        \int_{x_1}^{x_2} \int_{y_1(x)}^{y_2(x)} f(x, y) \mathop{}\!\mathrm{d}y \mathop{}\!\mathrm{d}x
+    $$
+
+    We notice that the inner integral, once evaluated, only depends on \(x\)! So let's set
+
+    $$
+        G(x) = \int_{y_1(x)}^{y_2(x)} f(x, y) \mathop{}\!\mathrm{d}y
+    $$
+
+    and we can rewrite that integral as
+
+    $$
+        \int_{x_1}^{x_2} G(x) \mathop{}\!\mathrm{d}x
+    $$
+
+    Now we can apply the trapezoid rule on this integral. And obviously \(G(x)\) can also be evaluated with the trapezoid rule. But the attentive reader
+    might have noticed another problem. In these numerical examples we always integrated over rectangles, whereas in the formulas above we integrate over
+    <i>any</i> set. We can define a new function
+
+    \begin{align}
+        \mathbb{I}_S: \mathbb{R}^2 &\longrightarrow \{0, 1\} \\
+        x &\longmapsto 
+        \begin{cases}
+            1, & \text{if } x \text{ is in } S \\
+            0, & \text{else}
+        \end{cases}
+    \end{align}
+
+    \(\mathbb{I}_S\) is called the characteristic function of \(S\). This allows us to write
+
+    $$
+        \iint_{S} f(\vec{r}) \mathop{}\!\mathrm{d}A = \int_{x_1}^{x_2} \int_{y_1(x)}^{y_2(x)} \mathbb{I}_S(x, y) f(x, y) \mathop{}\!\mathrm{d}y \mathop{}\!\mathrm{d}x
+    $$
+
+    We'll now see that \(\rho\) is our characteristic function.
+
+    <h2>Putting it all together</h2>
+    We now have all the tools to calculate our parameters. \(\vec{r}\) is simply the position of the points in 2D-Space, and \(\rho(\vec{r})\)
+    is the density of space at that position. Since the simulated pendulum has the same mass everywhere, it must also have the same
+    density everywhere. So, essentially, the density function looks like this:
+
+    $$
+        \rho(\vec{r}) = 
+        \begin{cases}
+        \rho, & \text{if } \vec{r} \text{ is in pendulum} \\
+        0, & \text{else}
+    \end{cases}
+    $$
+
+    Or if we define \(S\) to be the set of all points in the pendulum, it becomes apparent that
+
+    $$
+        \rho(\vec{r}) = \rho ~\mathbb{I}_S(x, y)
+    $$
+
+    So we need to implement a function that can determine wether a given point is inside our polygon or not. I used a raycasting algorithm
+    I found online for this. Essentially, you cast a ray from the point you're testing in any direction and then count how often you cross
+    an edge of the polygon. If that number is odd, you're inside the polygon.
+
+    Using that function as our density function, we can now implement the integrals using the trapezoid method, and thus calculate mass, 
+    center of mass and the moment of inertia of any polygon in 2D space! With this, simulating the initial differential equation becomes
+    trivial.
+</body>
+</html>

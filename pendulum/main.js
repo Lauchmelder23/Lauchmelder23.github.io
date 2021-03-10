@@ -173,7 +173,7 @@ function simulate()
 
 function setup() 
 {
-    canvas = createCanvas(displayHeight / 4 * 3, displayHeight / 4 * 3);
+    canvas = createCanvas(displayWidth - 100, displayHeight / 4 * 3);
     canvas.mouseClicked(handleClick);
 }
 
@@ -277,6 +277,6 @@ function handleClick(event)
         helper.sub(centerMass);
         theta = helper.angleBetween(createVector(0, -1));
 
-        document.getElementById("inst").innerHTML = "Mass: " + m.toFixed(3) + " M --- Moment of inertia: " + inertia.toFixed(3) + " ML²";
+        document.getElementById("inst").innerHTML = "Mass: " + m + " M --- Moment of inertia: " + inertia.toFixed(3) + " ML²";
     }
 }
