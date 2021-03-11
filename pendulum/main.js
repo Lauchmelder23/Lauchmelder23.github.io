@@ -40,7 +40,7 @@ function worldToScreen(point)
 function insideShape(point)
 {
     if(!shapeComplete)
-        return false;
+        return 0;
 
     // Raycasting algorithm
     point = worldToScreen(point);
@@ -52,7 +52,7 @@ function insideShape(point)
     {
         if ((points[i].y < point.y && points[j].y >= point.y 
             || points[j].y < point.y && points[i].y >= point.y) 
-            && (points[i].x <= point.x || points[j].y <= point.x)) 
+            && (points[i].x <= point.x || points[j].x <= point.x)) 
         {
             if (points[i].x + (point.y - points[i].y) / (points[j].y - points[i].y) * (points[j].x - points[i].x) < point.x) 
             {
@@ -62,7 +62,7 @@ function insideShape(point)
         j=i; 
     }
 
-  return (oddNodes ? 19300 * 0.01  : 0);    // 19.3 kgm^-3 at 1cm thick
+    return (oddNodes ? 19300 * 0.01  : 0);    // 19.3 kgm^-3 at 1cm thick
 }
 
 function massHelper(y, samples)
